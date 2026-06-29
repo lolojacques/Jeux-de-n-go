@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atelier Interactif : Théorie des Jeux & Négociation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="workshop-container">
+        <nav class="step-nav">
+            <button class="nav-btn active" data-step="1">Étape 1: L'Intuition</button>
+            <button class="nav-btn" data-step="2">Étape 2: Jeux One-Shot</button>
+            <button class="nav-btn" data-step="3">Étape 3: Répétition</button>
+            <button class="nav-btn" data-step="4">Étape 4: Bruit & Stratégies</button>
+            <button class="nav-btn" data-step="4.5">Étape 4.5: Facteur Humain</button>
+            <button class="nav-btn" data-step="5">Étape 5: Chicken Game</button>
+        </nav>
+
+        <main class="workshop-main">
+            <section id="step-1" class="step-section active">
+                <h2>Étape 1 : Le Choc Initial – Objet vs Relation</h2>
+                <p class="intro-text">Prenez conscience de votre profil naturel face aux deux axes de la négociation : l'Objet (gagner le gâteau) et la Relation (garder le partenaire).</p>
+                <div class="quiz-container">
+                    <h3>Questionnaire Dur / Doux</h3>
+                    <div class="quiz-question">
+                        <p>Lors d'un désaccord majeur avec un partenaire historique, quelle est votre priorité ?</p>
+                        <button class="quiz-opt" data-profile="dur">A. Gagner sur le fond, quitte à ce que la relation soit temporairement tendue.</button>
+                        <button class="quiz-opt" data-profile="doux">B. Préserver l'entente et la confiance, quitte à faire des concessions sur mes demandes.</button>
+                    </div>
+                    <div id="quiz-feedback" class="feedback-box hidden"></div>
+                </div>
+            </section>
+
+            <section id="step-2" class="step-section">
+                <h2>Étape 2 : Les Jeux "One-Shot" – La structure des situations</h2>
+                <div class="selector-group">
+                    <label for="game-type-selector">Choisissez la structure du jeu :</label>
+                    <select id="game-type-selector">
+                        <option value="winwin">A. Le Win-Win Naturel (Coordination)</option>
+                        <option value="sexes">B. La Guerre des Sexes (Positions)</option>
+                        <option value="dilemme">C. Le Dilemme du Prisonnier (Le Piège)</option>
+                    </select>
+                </div>
+                <div class="selector-group">
+                    <label for="scenario-selector">Choisissez le scénario appliqué :</label>
+                    <select id="scenario-selector"></select>
+                </div>
+
+                <div class="game-layout">
+                    <div class="scenario-description">
+                        <p id="scenario-text"></p>
+                    </div>
+                    <div class="matrix-container">
+                        <h3>Matrice des gains (Cliquez sur vos choix)</h3>
+                        <div class="matrix-grid" id="game-matrix">
+                            </div>
+                        <div id="matrix-feedback" class="feedback-box hidden"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="step-3" class="step-section">
+                <h2>Étape 3 : L'Ombre du Futur (Jeu Répété)</h2>
+                <p>Jouez au dilemme de la Saint-Valentin/des Communs sur 10 tours contre une IA. L'horizon temporel change-t-il la donne ?</p>
+                <div class="iterated-container">
+                    <div class="game-actions">
+                        <button id="btn-iter-c" class="action-btn c-btn">Coopérer (Offrir / Restreindre)</button>
+                        <button id="btn-iter-d" class="action-btn d-btn">Trahir (Pas offrir / Pomper)</button>
+                    </div>
+                    <div class="iterated-stats">
+                        <div>Tour : <span id="iter-tour">0</span>/10</div>
+                        <div>Votre score : <span id="iter-score-player">0</span></div>
+                        <div>Score IA : <span id="iter-score-ia">0</span></div>
+                    </div>
+                    <div class="history-log" id="iter-history"></div>
+                </div>
+            </section>
+
+            <section id="step-4" class="step-section">
+                <h2>Étape 4 : L'émergence des Stratégies et l'impact du "Bruit"</h2>
+                <p>Dans le monde réel, un bug, un retard de mail ou un malentendu peut être interprété comme une trahison unilatérale.</p>
+                <div class="noise-container">
+                    <button id="btn-play-noise" class="action-btn">Lancer la simulation de 10 tours AVEC BRUIT au Tour 4</button>
+                    <div class="history-log" id="noise-history"></div>
+                    <div id="noise-takeaway" class="feedback-box hidden"></div>
+                </div>
+            </section>
+
+            <section id="step-4.5" class="step-section">
+                <h2>Étape 4.5 : Les Briseurs de Certitudes (Le facteur humain)</h2>
+                <div class="human-factor-grid">
+                    <div class="sub-game-box">
+                        <h3>🃏 Cartes Rouges & Noires (Le Pouvoir)</h3>
+                        <p>Gricha (l'animateur) a des cartes noires rares, vous avez des cartes rouges communes. Il refuse de détruire ses cartes.</p>
+                        <button id="btn-show-power" class="sub-btn">Analyser la BATNA</button>
+                        <div id="box-power" class="feedback-box hidden"></div>
+                    </div>
+                    <div class="sub-game-box">
+                        <h3>💰 Le Partage des 10 € (L'Injustice)</h3>
+                        <p>L'IA vous propose un partage asymétrique des 10 €.</p>
+                        <div id="ultimatum-controls">
+                            <p>L'IA propose : <strong style="color:#e63946;">7 € pour elle, 3 € pour vous</strong>.</p>
+                            <button class="sub-btn accept-btn" data-choice="accept">Accepter (Gagner 3€)</button>
+                            <button class="sub-btn reject-btn" data-choice="reject">Refuser (0€ pour les deux)</button>
+                        </div>
+                        <div id="box-justice" class="feedback-box hidden"></div>
+                    </div>
+                    <div class="sub-game-box">
+                        <h3>💸 L'Enchère du billet de 10 € (L'Ego)</h3>
+                        <p>Misez sur un billet de 10 €. Règle : Le deuxième paye sa mise mais ne gagne rien !</p>
+                        <div class="auction-simulation">
+                            <button id="btn-auction-step" class="sub-btn">Simuler l'escalade des enchères</button>
+                            <div id="auction-log" style="font-family: monospace; font-size: 0.85rem; margin-top: 5px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="step-5" class="step-section">
+                <h2>Étape 5 : Le Chicken Game – Le Piège de l'Engagement</h2>
+                <div class="selector-group">
+                    <label for="chicken-scenario-selector">Choisissez le scénario de crise :</label>
+                    <select id="chicken-scenario-selector">
+                        <option value="domestique">Ultimatum domestique (WoW vs Desperate Housewives)</option>
+                        <option value="ecologie">État vs Industrie polluante</option>
+                        <option value="ecole">Le Professeur face au Clown</option>
+                        <option value="mariage">La stratégie de la terre brûlée (Budget Mariage)</option>
+                    </select>
+                </div>
+                <div class="game-layout">
+                    <div class="scenario-description">
+                        <p id="chicken-text"></p>
+                    </div>
+                    <div class="matrix-container">
+                        <h3>Matrice du Bras de Fer</h3>
+                        <div class="matrix-grid" id="chicken-matrix"></div>
+                        <div id="chicken-feedback" class="feedback-box hidden"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="harvard-footer">
+        <h3>🧭 Le Cadre de la Négociation Raisonnée (Méthode de Harvard / DIVA)</h3>
+        <p><strong>L'objectif pédagogique :</strong> Transformer un Dilemme du Prisonnier ou un Chicken Game en un jeu de Coordination Win-Win en appliquant 3 piliers : <strong>Séparer l'Humain de l'Objet</strong> (gérer le bruit), <strong>Se concentrer sur les Intérêts</strong> (pas les positions), et <strong>Utiliser des critères objectifs</strong>.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
