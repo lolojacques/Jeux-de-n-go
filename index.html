@@ -2,151 +2,792 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atelier Interactif : Théorie des Jeux & Négociation</title>
-    <link rel="stylesheet" href="style.css">
+    <title>KENOBER - L'Atelier de la Confiance & Négociation</title>
+    <style>
+        :root {
+            --primary: #EFB901;
+            --dark: #000000;
+            --light: #ffffff;
+            --gray: #f4f4f4;
+            --border-thick: 3px solid #000000;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .workshop-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .workshop-header h1 {
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 24pt;
+        }
+
+        .step-wizard {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            max-width: 800px;
+        }
+        .wizard-btn {
+            background: var(--light);
+            border: 2px solid var(--dark);
+            padding: 8px 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .wizard-btn.active {
+            background: var(--dark);
+            color: var(--primary);
+            box-shadow: 3px 3px 0px var(--primary);
+        }
+
+        .game-container {
+            width: 580px;
+            border: var(--border-thick);
+            border-radius: 8px;
+            padding: 25px;
+            background: var(--light);
+            box-shadow: 6px 6px 0px var(--primary);
+            margin-bottom: 40px;
+        }
+
+        .header {
+            background: var(--dark);
+            color: var(--primary);
+            padding: 12px;
+            margin: -25px -25px 20px -25px;
+            border-radius: 5px 5px 0 0;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 14pt;
+        }
+
+        .picto-box {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 15px auto;
+            display: block;
+        }
+
+        .step-content {
+            display: none;
+        }
+        .step-content.active {
+            display: block;
+        }
+
+        .selector-group {
+            margin: 15px 0;
+            text-align: left;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--dark);
+            border-radius: 4px;
+            background: var(--light);
+            font-weight: bold;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            background: var(--dark);
+            padding: 4px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .matrix-cell {
+            background: var(--light);
+            padding: 12px;
+            font-weight: bold;
+            font-size: 11pt;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+            text-align: center;
+        }
+        .matrix-cell.header-label {
+            background: #e8e8e8;
+            font-size: 10pt;
+        }
+        .matrix-cell.highlighted-outcome {
+            background: var(--primary) !important;
+            color: var(--dark) !important;
+            border: 2px dashed var(--dark);
+            transform: scale(1.02);
+        }
+
+        .duel-zone {
+            background: var(--gray);
+            border: 2px dashed var(--dark);
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .duel-title {
+            font-size: 11pt;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            font-size: 11pt;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid var(--dark);
+            border-radius: 4px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            margin: 5px;
+        }
+        .btn-primary { background-color: var(--primary); color: var(--dark); }
+        .btn-primary:hover { background-color: #d4a400; }
+        .btn-dark { background-color: var(--dark); color: var(--primary); }
+        .btn-dark:hover { background-color: #222; }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            font-size: 13pt;
+            font-weight: bold;
+        }
+        .score {
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 3px;
+        }
+
+        .feedback-panel {
+            background: #fffdf0;
+            border-left: 5px solid var(--primary);
+            padding: 15px;
+            margin-top: 15px;
+            text-align: left;
+            font-size: 10.5pt;
+            line-height: 1.4;
+            border: 1px solid #ddd;
+            border-left: 5px solid var(--primary);
+        }
+        .hidden { display: none !important; }
+
+        .history-terminal {
+            background: #111;
+            color: #15ff00;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            text-align: left;
+            max-height: 120px;
+            overflow-y: auto;
+            font-size: 9.5pt;
+            margin-top: 10px;
+        }
+
+        .harvard-footer {
+            max-width: 580px;
+            background: #fffbdf;
+            border: 2px solid var(--dark);
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 10pt;
+            line-height: 1.4;
+            text-align: left;
+            box-shadow: 4px 4px 0px var(--dark);
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <div class="workshop-container">
-        <nav class="step-nav">
-            <button class="nav-btn active" data-step="1">Étape 1: L'Intuition</button>
-            <button class="nav-btn" data-step="2">Étape 2: Jeux One-Shot</button>
-            <button class="nav-btn" data-step="3">Étape 3: Répétition</button>
-            <button class="nav-btn" data-step="4">Étape 4: Bruit & Stratégies</button>
-            <button class="nav-btn" data-step="4.5">Étape 4.5: Facteur Humain</button>
-            <button class="nav-btn" data-step="5">Étape 5: Chicken Game</button>
-        </nav>
 
-        <main class="workshop-main">
-            <section id="step-1" class="step-section active">
-                <h2>Étape 1 : Le Choc Initial – Objet vs Relation</h2>
-                <p class="intro-text">Prenez conscience de votre profil naturel face aux deux axes de la négociation : l'Objet (gagner le gâteau) et la Relation (garder le partenaire).</p>
-                <div class="quiz-container">
-                    <h3>Questionnaire Dur / Doux</h3>
-                    <div class="quiz-question">
-                        <p>Lors d'un désaccord majeur avec un partenaire historique, quelle est votre priorité ?</p>
-                        <button class="quiz-opt" data-profile="dur">A. Gagner sur le fond, quitte à ce que la relation soit temporairement tendue.</button>
-                        <button class="quiz-opt" data-profile="doux">B. Préserver l'entente et la confiance, quitte à faire des concessions sur mes demandes.</button>
-                    </div>
-                    <div id="quiz-feedback" class="feedback-box hidden"></div>
-                </div>
-            </section>
+<div class="workshop-header">
+    <h1>Kenober</h1>
+    <p>Le Grand Simulateur Pédagogique des Théories des Jeux</p>
+</div>
 
-            <section id="step-2" class="step-section">
-                <h2>Étape 2 : Les Jeux "One-Shot" – La structure des situations</h2>
-                <div class="selector-group">
-                    <label for="game-type-selector">Choisissez la structure du jeu :</label>
-                    <select id="game-type-selector">
-                        <option value="winwin">A. Le Win-Win Naturel (Coordination)</option>
-                        <option value="sexes">B. La Guerre des Sexes (Positions)</option>
-                        <option value="dilemme">C. Le Dilemme du Prisonnier (Le Piège)</option>
-                    </select>
-                </div>
-                <div class="selector-group">
-                    <label for="scenario-selector">Choisissez le scénario appliqué :</label>
-                    <select id="scenario-selector"></select>
-                </div>
+<div class="step-wizard">
+    <button class="wizard-btn active" onclick="goToStep(1)">1. L'Intuition</button>
+    <button class="wizard-btn" onclick="goToStep(2)">2. One-Shot</button>
+    <button class="wizard-btn" onclick="goToStep(3)">3. Répétition</button>
+    <button class="wizard-btn" onclick="goToStep(4)">4. Le Bruit</button>
+    <button class="wizard-btn" onclick="goToStep(45)">4.5. Humain</button>
+    <button class="wizard-btn" onclick="goToStep(5)">5. Le Crash</button>
+</div>
 
-                <div class="game-layout">
-                    <div class="scenario-description">
-                        <p id="scenario-text"></p>
-                    </div>
-                    <div class="matrix-container">
-                        <h3>Matrice des gains (Cliquez sur vos choix)</h3>
-                        <div class="matrix-grid" id="game-matrix">
-                            </div>
-                        <div id="matrix-feedback" class="feedback-box hidden"></div>
-                    </div>
-                </div>
-            </section>
+<div class="game-container">
+    <div class="header" id="container-title">Étape 1 : Le Choc Initial</div>
 
-            <section id="step-3" class="step-section">
-                <h2>Étape 3 : L'Ombre du Futur (Jeu Répété)</h2>
-                <p>Jouez au dilemme de la Saint-Valentin/des Communs sur 10 tours contre une IA. L'horizon temporel change-t-il la donne ?</p>
-                <div class="iterated-container">
-                    <div class="game-actions">
-                        <button id="btn-iter-c" class="action-btn c-btn">Coopérer (Offrir / Restreindre)</button>
-                        <button id="btn-iter-d" class="action-btn d-btn">Trahir (Pas offrir / Pomper)</button>
-                    </div>
-                    <div class="iterated-stats">
-                        <div>Tour : <span id="iter-tour">0</span>/10</div>
-                        <div>Votre score : <span id="iter-score-player">0</span></div>
-                        <div>Score IA : <span id="iter-score-ia">0</span></div>
-                    </div>
-                    <div class="history-log" id="iter-history"></div>
-                </div>
-            </section>
-
-            <section id="step-4" class="step-section">
-                <h2>Étape 4 : L'émergence des Stratégies et l'impact du "Bruit"</h2>
-                <p>Dans le monde réel, un bug, un retard de mail ou un malentendu peut être interprété comme une trahison unilatérale.</p>
-                <div class="noise-container">
-                    <button id="btn-play-noise" class="action-btn">Lancer la simulation de 10 tours AVEC BRUIT au Tour 4</button>
-                    <div class="history-log" id="noise-history"></div>
-                    <div id="noise-takeaway" class="feedback-box hidden"></div>
-                </div>
-            </section>
-
-            <section id="step-4.5" class="step-section">
-                <h2>Étape 4.5 : Les Briseurs de Certitudes (Le facteur humain)</h2>
-                <div class="human-factor-grid">
-                    <div class="sub-game-box">
-                        <h3>🃏 Cartes Rouges & Noires (Le Pouvoir)</h3>
-                        <p>Gricha (l'animateur) a des cartes noires rares, vous avez des cartes rouges communes. Il refuse de détruire ses cartes.</p>
-                        <button id="btn-show-power" class="sub-btn">Analyser la BATNA</button>
-                        <div id="box-power" class="feedback-box hidden"></div>
-                    </div>
-                    <div class="sub-game-box">
-                        <h3>💰 Le Partage des 10 € (L'Injustice)</h3>
-                        <p>L'IA vous propose un partage asymétrique des 10 €.</p>
-                        <div id="ultimatum-controls">
-                            <p>L'IA propose : <strong style="color:#e63946;">7 € pour elle, 3 € pour vous</strong>.</p>
-                            <button class="sub-btn accept-btn" data-choice="accept">Accepter (Gagner 3€)</button>
-                            <button class="sub-btn reject-btn" data-choice="reject">Refuser (0€ pour les deux)</button>
-                        </div>
-                        <div id="box-justice" class="feedback-box hidden"></div>
-                    </div>
-                    <div class="sub-game-box">
-                        <h3>💸 L'Enchère du billet de 10 € (L'Ego)</h3>
-                        <p>Misez sur un billet de 10 €. Règle : Le deuxième paye sa mise mais ne gagne rien !</p>
-                        <div class="auction-simulation">
-                            <button id="btn-auction-step" class="sub-btn">Simuler l'escalade des enchères</button>
-                            <div id="auction-log" style="font-family: monospace; font-size: 0.85rem; margin-top: 5px;"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="step-5" class="step-section">
-                <h2>Étape 5 : Le Chicken Game – Le Piège de l'Engagement</h2>
-                <div class="selector-group">
-                    <label for="chicken-scenario-selector">Choisissez le scénario de crise :</label>
-                    <select id="chicken-scenario-selector">
-                        <option value="domestique">Ultimatum domestique (WoW vs Desperate Housewives)</option>
-                        <option value="ecologie">État vs Industrie polluante</option>
-                        <option value="ecole">Le Professeur face au Clown</option>
-                        <option value="mariage">La stratégie de la terre brûlée (Budget Mariage)</option>
-                    </select>
-                </div>
-                <div class="game-layout">
-                    <div class="scenario-description">
-                        <p id="chicken-text"></p>
-                    </div>
-                    <div class="matrix-container">
-                        <h3>Matrice du Bras de Fer</h3>
-                        <div class="matrix-grid" id="chicken-matrix"></div>
-                        <div id="chicken-feedback" class="feedback-box hidden"></div>
-                    </div>
-                </div>
-            </section>
-        </main>
+    <div id="step1-view" class="step-content active">
+        <img src="tête-coeur-corps.png" alt="Alignement" class="picto-box">
+        <p><strong>Animation Post-its : Êtes-vous Dur ou Doux ?</strong></p>
+        <p>Dans une négociation à fort enjeu, vers quel axe penche naturellement votre personnalité ?</p>
+        <div style="margin-top:20px;">
+            <button class="btn btn-primary" onclick="setProfile('doux')">🎈 Axe Relation (Doux)</button>
+            <button class="btn btn-dark" onclick="setProfile('dur')">🎯 Axe Objet (Dur)</button>
+        </div>
+        <div id="step1-feedback" class="feedback-panel hidden"></div>
     </div>
 
-    <footer class="harvard-footer">
-        <h3>🧭 Le Cadre de la Négociation Raisonnée (Méthode de Harvard / DIVA)</h3>
-        <p><strong>L'objectif pédagogique :</strong> Transformer un Dilemme du Prisonnier ou un Chicken Game en un jeu de Coordination Win-Win en appliquant 3 piliers : <strong>Séparer l'Humain de l'Objet</strong> (gérer le bruit), <strong>Se concentrer sur les Intérêts</strong> (pas les positions), et <strong>Utiliser des critères objectifs</strong>.</p>
-    </footer>
+    <div id="step2-view" class="step-content">
+        <img src="ateliers.png" alt="Workshop" class="picto-box">
+        <div class="selector-group">
+            <label>Structure de la situation :</label>
+            <select id="step2-game-select" onchange="onStep2GameChange()">
+                <option value="winwin">A. Le Win-Win Naturel (Coordination)</option>
+                <option value="sexes">B. La Guerre des Sexes (Guerre de Positions)</option>
+                <option value="dilemme">C. Le Dilemme du Prisonnier (Le Piège)</option>
+            </select>
+        </div>
+        <div class="selector-group">
+            <label>Scénario contextuel :</label>
+            <select id="step2-scenario-select" onchange="resetStep2Duel()"></select>
+        </div>
+        <div class="selector-group">
+            <label>Profil de votre adversaire :</label>
+            <select id="step2-ai-select" onchange="resetStep2Duel()">
+                <option value="cooperative">L'Altruiste (Cherche l'accord)</option>
+                <option value="cheat">Le Tricheur (Cherche à vous plumer)</option>
+            </select>
+        </div>
+        <p id="step2-description" style="text-align:left; font-size:10.5pt; min-height:40px; margin-bottom:10px;"></p>
+        
+        <div class="duel-zone">
+            <div class="duel-title">Faites votre choix unique :</div>
+            <div id="step2-buttons-container"></div>
+        </div>
 
-    <script src="app.js"></script>
+        <div class="matrix-grid hidden" id="step2-matrix"></div>
+        <div id="step2-feedback" class="feedback-panel hidden"></div>
+    </div>
+
+    <div id="step3-view" class="step-content">
+        <img src="cerveau.png" alt="Réflexion" class="picto-box">
+        <p><strong>L'Ombre du Futur : Match en 10 Rounds</strong></p>
+        <div class="selector-group">
+            <label>Choisissez la stratégie de la machine en face :</label>
+            <select id="step3-ai-strategy" onchange="resetStep3()">
+                <option value="COPYCAT">Le Copieur (Tit-for-Tat) - Réciprocité</option>
+                <option value="ALWAYS_CHEAT">Le Tricheur (Always Cheat) - Prédateur</option>
+                <option value="ALWAYS_COOPERATE">L'Ange (Always Cooperate) - Victime</option>
+                <option value="GRUDGER">Le Rancunier (Grim Trigger) - Sans pardon</option>
+            </select>
+        </div>
+        
+        <div class="score-board">
+            <div class="score">Round : <span id="s3-round">1</span>/10</div>
+            <div class="score">Vous : <span id="s3-pscore">0</span></div>
+            <div class="score">IA : <span id="s3-aiscore">0</span></div>
+        </div>
+        <div style="margin: 15px 0;" id="s3-controls">
+            <button class="btn btn-primary" onclick="playStep3(true)">🤝 Coopérer</button>
+            <button class="btn btn-dark" onclick="playStep3(false)">🥷 Tricher</button>
+        </div>
+        <div class="history-terminal" id="s3-terminal">Consoles de transmission prête...</div>
+        <div id="step3-feedback" class="feedback-panel hidden"></div>
+    </div>
+
+    <div id="step4-view" class="step-content">
+        <img src="bulle parole pointillé.png" alt="Malentendu" class="picto-box">
+        <p><strong>L'Exercice du Malentendu (Le Bruit)</strong></p>
+        <p style="font-size:10pt; color:#444;">Deux profils réciproques coopèrent. Mais au <strong>Tour 4</strong>, le sort égare votre message. L'IA reçoit l'information 'Trahison'.</p>
+        <button class="btn btn-primary" onclick="triggerNoiseSimulation()">Lancer la simulation de crise</button>
+        <div class="history-terminal" id="s4-terminal">En attente du déclenchement du bug...</div>
+        <div id="step4-feedback" class="feedback-panel hidden"></div>
+    </div>
+
+    <div id="step45-view" class="step-content">
+        <img src="émulation créative.png" alt="Facteur Humain" class="picto-box">
+        <p><strong>Trois Ateliers pour Briser les Certitudes Mathématiques</strong></p>
+        
+        <div class="selector-group">
+            <label>Choisissez l'atelier :</label>
+            <select id="s45-select" onchange="onStep45Change()">
+                <option value="cartes">🃏 Jeu des Cartes (Pouvoir & Rareté)</option>
+                <option value="partage">💰 Partage des 10 € (Iniquité & Émotion)</option>
+                <option value="enchere">💸 Enchère du billet de 10 € (Escalade de l'Ego)</option>
+            </select>
+        </div>
+
+        <div id="s45-content" style="text-align:left; font-size:10.5pt; padding:10px 0;"></div>
+        <div id="s45-action-zone"></div>
+        <div id="s45-feedback" class="feedback-panel hidden"></div>
+    </div>
+
+    <div id="step5-view" class="step-content">
+        <img src="Facilitation.png" alt="Facilitation" class="picto-box">
+        <div class="selector-group">
+            <label>Scénario de Crise Absolue :</label>
+            <select id="step5-scenario-select" onchange="resetStep5Duel()">
+                <option value="domestique">📺 Ultimatum Domestique (WoW vs Desperate)</option>
+                <option value="ecologie">🏭 Écologie (État vs Industriel polluant)</option>
+                <option value="ecole">🏫 Éducation (Le Professeur vs Le Clown)</option>
+                <option value="mariage">💍 Budget Mariage (La Terre Brûlée)</option>
+            </select>
+        </div>
+        <div class="selector-group">
+            <label>Mentalité de l'IA adverse :</label>
+            <select id="step5-ai-select" onchange="resetStep5Duel()">
+                <option value="BULLDOG">Le Téméraire (S'impose quoi qu'il arrive)</option>
+                <option value="POLTRON">Le Prudent (Cède sous la pression)</option>
+            </select>
+        </div>
+        <p id="step5-description" style="text-align:left; font-size:10.5pt; min-height:40px; margin-bottom:10px;"></p>
+        
+        <div class="duel-zone">
+            <div class="duel-title">Quelle posture adoptez-vous ?</div>
+            <div id="step5-buttons-container"></div>
+        </div>
+
+        <div class="matrix-grid hidden" id="step5-matrix"></div>
+        <div id="step5-feedback" class="feedback-panel hidden"></div>
+    </div>
+</div>
+
+<div class="harvard-footer">
+    <img src="co-construction.png" alt="Harvard" style="width:30px; float:left; margin-right:10px;">
+    <strong>Objectif Méthodologique DIVA :</strong> Cet outil démontre pourquoi la guerre de position traditionnelle détruit la valeur. La <strong>Négociation Raisonnée (Harvard)</strong> fournit les clés pour décoder ces matrices, séparer l'Humain de l'Objet, et transformer les dilemmes bloqués en jeux de coordination à gains mutuels.
+</div>
+
+<script>
+    const STEP2_DATA = {
+        winwin: {
+            title: "Coordination : Le Win-Win Naturel",
+            options: {
+                couple: {
+                    label: "Le couple et la soirée",
+                    desc: "S'accorder sur le programme de la soirée. L'alignement crée la complicité, le désalignement gâche tout.",
+                    rows: ["Danser", "Candy Crush"],
+                    m: [ ["+2 / +2", "-2 / -2"], ["-2 / -2", "-1 / -1"] ],
+                    note_cooperative: "<strong>Équilibre de Nash convergent.</strong> L'Altruiste a choisi de 'Danser' pour s'aligner. Si vous l'avez suivi, le Win-Win est parfait (+2/+2).",
+                    note_cheat: "L'adversaire a joué égoïstement pour soi ('Candy Crush'). Si vous avez choisi 'Danser', vous êtes bloqué seul (-2). Si vous avez choisi 'Candy Crush', la soirée est mauvaise pour tout le monde."
+                },
+                ecologie: {
+                    label: "Menace des Algues Vertes",
+                    desc: "Deux communes doivent installer des vannes de filtrage en même temps pour sauver l'eau du lac partagé.",
+                    rows: ["Investir", "Ne rien faire"],
+                    m: [ ["+2 / +2", "-2 / -1"], ["-1 / -2", "-1 / -1"] ],
+                    note_cooperative: "L'Altruiste a investi ses fonds. Si vous l'avez imité, le lac est sauvé (+2/+2). Si vous êtes resté passif, elle subit une perte sèche (-2) et vous détruisez sa confiance.",
+                    note_cheat: "Le Tricheur a refusé de payer. Si vous avez investi seul, vous perdez tout (-2). Si vous êtes resté passif, le lac meurt."
+                }
+            }
+        },
+        sexes: {
+            title: "Guerre des Sexes : Bataille de Positions",
+            options: {
+                logistique: {
+                    label: "Fret et conteneur partagé",
+                    desc: "Deux boîtes doivent remplir un conteneur. Mode Train (écolo) ou Camion (rapide).",
+                    rows: ["Train", "Camion"],
+                    m: [ ["+2 / 0", "-1 / -1"], ["-1 / -1", "0 / +2"] ],
+                    note_cooperative: "L'Altruiste a choisi de s'adapter à votre critère préféré. Si vous avez joué fermement, vous raflez l'avantage.",
+                    note_cheat: "Le Tricheur a ancré sa position sur son propre critère. Si vous refusez de plier, le conteneur reste bloqué au port (-1/-1)."
+                },
+                profs: {
+                    label: "Le projet Grand Oral",
+                    desc: "Deux enseignants fusionnent leurs cours. Qui prend les devants pour dicter la grille ?",
+                    rows: ["S'investir", "Venir en touriste"],
+                    m: [ ["+2 / +2", "-1 / +1"], ["+1 / -1", "-1 / -1"] ],
+                    note_cooperative: "L'Altruiste s'investit avec vous. Si vous l'avez fait également, le projet est une réussite collective majeure.",
+                    note_cheat: "Le Tricheur vient en touriste. Si vous vous êtes investi seul, vous travaillez pour deux pendant qu'il récolte les honneurs."
+                }
+            }
+        },
+        dilemme: {
+            title: "Le Dilemme du Prisonnier One-Shot",
+            options: {
+                valentin: {
+                    label: "Le Piège de la Saint-Valentin",
+                    desc: "Achetez-vous un cadeau ce soir ? Risquez-vous la confiance ?",
+                    rows: ["Offrir", "Pas offrir"],
+                    m: [ ["+1 / +1", "-2 / +2"], ["+2 / -2", "0 / 0"] ],
+                    note_cooperative: "L'Altruiste a parié sur la confiance ('Offrir'). Si vous l'avez piégé en n'offrant rien, vous gagnez gros (+2) mais brisez la relation.",
+                    note_cheat: "Le Tricheur a refusé d'offrir par méfiance. Si vous avez joué la confiance pure, vous êtes le grand dupe (-2) de la soirée."
+                },
+                communs: {
+                    label: "La Tragédie des Communs (Irrigation)",
+                    desc: "Sécheresse. Faut-il restreindre son pompage ou tricher la nuit pour saturer ses terres ?",
+                    rows: ["Restreindre", "Pomper"],
+                    m: [ ["+1 / +1", "-2 / +2"], ["+2 / -2", "0 / 0"] ],
+                    note_cooperative: "L'Altruiste a bridé ses pompes. Si vous avez triché, vous sauvez votre exploitation au détriment de sa survie.",
+                    note_cheat: "Le Tricheur a vidé la nappe la nuit. Si vous avez restreint votre usage, vos parcelles meurent. Le One-Shot pousse à la défection."
+                }
+            }
+        }
+    };
+
+    const CHICKEN_DATA = {
+        domestique: {
+            desc: "Bras de fer télé. L'un applique une stratégie de blocage pour forcer l'autre à s'incliner.",
+            rows: ["Céder", "S'imposer"],
+            m: [ ["-1 / -1", "-2 / +2"], ["+2 / -2", "-2 / -2 (Crash)"] ],
+            note_bulldog: "Le Téméraire maintient sa position de force. Si vous refusez de plier, c'est le crash du couple (-2/-2). L'intimidation fonctionne si vous craignez l'accident.",
+            note_poltron: "L'IA a eu peur de l'accident et a choisi de céder. Si vous vous êtes imposé, vous l'emportez, mais au détriment de l'équité."
+        },
+        ecologie: {
+            desc: "L'État menace de fermer le site polluant, l'industriel menace de licencier 3000 personnes en représailles.",
+            rows: ["Négocier", "Menacer/Fermer"],
+            m: [ ["-1 / -1", "-2 / +2"], ["+2 / -2", "-2 / -2 (Crash)"] ],
+            note_bulldog: "L'industriel applique sa menace. Maintenir le bras de fer étatique sans porte de sortie mène droit au désastre social et économique.",
+            note_poltron: "L'adversaire recule pour éviter le drame. La fermeté a payé, mais la relation institutionnelle est abîmée."
+        },
+        ecole: {
+            desc: "Un élève perturbe le cours en imitant le prof. Le professeur brandit le conseil de discipline, le clown accélère.",
+            rows: ["Calmer le jeu", "Exclure/Provoquer"],
+            m: [ ["-1 / -1", "-2 / +2"], ["+2 / -2", "-2 / -2 (Crash)"] ],
+            note_bulldog: "Le perturbateur refuse de se soumettre. L'escalade de l'autorité mène à l'exclusion lourde et gâche le cours pour la classe.",
+            note_poltron: "L'adversaire s'écrase pour éviter l'exclusion définitive. L'autorité est restaurée mais par la peur."
+        },
+        mariage: {
+            desc: "Désaccord budgétaire. L'un bloque les comptes, l'autre engage des frais irréversibles de son côté.",
+            rows: ["Compromis", "Bloquer/Forcer"],
+            m: [ ["-1 / -1", "-2 / +2"], ["+2 / -2", "-2 / -2 (Crash)"] ],
+            note_bulldog: "La terre brûlée est activée en face. Répliquer par un contre-blocage détruit le mariage et l'argent engagé."
+        }
+    };
+
+    function goToStep(stepId) {
+        document.querySelectorAll('.wizard-btn').forEach((btn, idx) => {
+            btn.classList.toggle('active', (idx + 1 === stepId || (stepId === 45 && idx === 4)));
+        });
+        document.querySelectorAll('.step-content').forEach(view => view.classList.remove('active'));
+        
+        let viewId = stepId === 45 ? 'step45-view' : `step${stepId}-view`;
+        document.getElementById(viewId).classList.add('active');
+
+        if (stepId === 1) document.getElementById('container-title').innerText = "Étape 1 : Le Choc Initial";
+        if (stepId === 2) {
+            document.getElementById('container-title').innerText = "Étape 2 : Les Jeux One-Shot";
+            onStep2GameChange();
+        }
+        if (stepId === 3) {
+            document.getElementById('container-title').innerText = "Étape 3 : L'Ombre du Futur";
+            resetStep3();
+        }
+        if (stepId === 4) document.getElementById('container-title').innerText = "Étape 4 : L'Impact du Bruit";
+        if (stepId === 45) {
+            document.getElementById('container-title').innerText = "Étape 4.5 : Le Facteur Humain";
+            onStep45Change();
+        }
+        if (stepId === 5) {
+            document.getElementById('container-title').innerText = "Étape 5 : Le Chicken Game";
+            resetStep5Duel();
+        }
+    }
+
+    function setProfile(type) {
+        const fb = document.getElementById('step1-feedback');
+        fb.classList.remove('hidden');
+        if (type === 'doux') {
+            fb.innerHTML = "🎯 <strong>Analyse :</strong> Vous privilégiez la Relation. Concessionnaire né, attention sans protection à ne pas vous faire exploiter par les profils prédateurs.";
+        } else {
+            fb.innerHTML = "🎯 <strong>Analyse :</strong> Vous visez l'Objet (le gâteau). Compétiteur né, attention cette approche rigide détruit les partenariats récurrents.";
+        }
+    }
+
+    const gameSelector = document.getElementById('step2-game-select');
+    const scenarioSelector = document.getElementById('step2-scenario-select');
+
+    function onStep2GameChange() {
+        const gameKey = gameSelector.value;
+        scenarioSelector.innerHTML = "";
+        
+        Object.keys(STEP2_DATA[gameKey].options).forEach(k => {
+            let opt = document.createElement('option');
+            opt.value = k;
+            opt.textContent = STEP2_DATA[gameKey].options[k].label;
+            scenarioSelector.appendChild(opt);
+        });
+        resetStep2Duel();
+    }
+
+    function resetStep2Duel() {
+        const gameKey = gameSelector.value;
+        const scenKey = scenarioSelector.value;
+        if (!scenKey) return;
+
+        const config = STEP2_DATA[gameKey].options[scenKey];
+        document.getElementById('step2-description').innerText = config.desc;
+        document.getElementById('step2-feedback').classList.add('hidden');
+        
+        // Cacher la matrice au reboot
+        document.getElementById('step2-matrix').classList.add('hidden');
+
+        const buttonsContainer = document.getElementById('step2-buttons-container');
+        buttonsContainer.innerHTML = `
+            <button class="btn btn-primary" onclick="playStep2Game(0)">⚡ ${config.rows[0]}</button>
+            <button class="btn btn-dark" onclick="playStep2Game(1)">⚡ ${config.rows[1]}</button>
+        `;
+    }
+
+    function playStep2Game(playerChoiceIdx) {
+        const gameKey = gameSelector.value;
+        const scenKey = scenarioSelector.value;
+        const aiType = document.getElementById('step2-ai-select').value;
+        const config = STEP2_DATA[gameKey].options[scenKey];
+        
+        // Choix IA basé sur le type sélectionné par l'utilisateur
+        const aiChoiceIdx = (aiType === 'cooperative') ? 0 : 1;
+
+        // Révéler et dessiner la matrice (Phase de Débrief)
+        const matrixBox = document.getElementById('step2-matrix');
+        matrixBox.classList.remove('hidden');
+        matrixBox.innerHTML = `
+            <div class="matrix-cell header-label">Vous \\ IA</div>
+            <div class="matrix-cell header-label">${config.rows[0]}</div>
+            <div class="matrix-cell header-label">${config.rows[1]}</div>
+            
+            <div class="matrix-cell header-label">${config.rows[0]}</div>
+            <div class="matrix-cell ${playerChoiceIdx===0 && aiChoiceIdx===0 ? 'highlighted-outcome' : ''}">${config.m[0][0]}</div>
+            <div class="matrix-cell ${playerChoiceIdx===0 && aiChoiceIdx===1 ? 'highlighted-outcome' : ''}">${config.m[0][1]}</div>
+            
+            <div class="matrix-cell header-label">${config.rows[1]}</div>
+            <div class="matrix-cell ${playerChoiceIdx===1 && aiChoiceIdx===0 ? 'highlighted-outcome' : ''}">${config.m[1][0]}</div>
+            <div class="matrix-cell ${playerChoiceIdx===1 && aiChoiceIdx===1 ? 'highlighted-outcome' : ''}">${config.m[1][1]}</div>
+        `;
+
+        const fb = document.getElementById('step2-feedback');
+        fb.classList.remove('hidden');
+        const textNote = (aiType === 'cooperative') ? config.note_cooperative : config.note_cheat;
+        fb.innerHTML = `🏁 <strong>Débriefing :</strong> Vous avez joué [${config.rows[playerChoiceIdx]}] face à un adversaire configuré en mode [${aiType==='cooperative'?'Altruiste':'Tricheur'}].<br><br>${textNote}`;
+    }
+
+    // --- ÉTAPE 3 : DUEL SUR PLUSIEURS COUPS (CHOIX STRATÉGIE IA) ---
+    let s3Round = 1;
+    let s3PlayerScore = 0;
+    let s3AiScore = 0;
+    let s3PlayerHistory = [];
+    let s3AiHistory = [];
+
+    function resetStep3() {
+        s3Round = 1; s3PlayerScore = 0; s3AiScore = 0; s3PlayerHistory = []; s3AiHistory = [];
+        document.getElementById('s3-round').innerText = s3Round;
+        document.getElementById('s3-pscore').innerText = s3PlayerScore;
+        document.getElementById('s3-aiscore').innerText = s3AiScore;
+        
+        const stratName = document.getElementById('step3-ai-strategy').value;
+        document.getElementById('s3-terminal').innerHTML = `⚙️ Initialisation du match. IA configurée sur le profil : [${stratName}]...<br>`;
+        document.getElementById('step3-feedback').classList.add('hidden');
+        document.getElementById('s3-controls').style.display = 'block';
+    }
+
+    function playStep3(playerCooperate) {
+        if (s3Round > 10) return;
+
+        const strat = document.getElementById('step3-ai-strategy').value;
+        let aiCooperate = true;
+
+        // Émulation des différentes stratégies sélectionnables
+        if (strat === 'ALWAYS_CHEAT') {
+            aiCooperate = false;
+        } else if (strat === 'ALWAYS_COOPERATE') {
+            aiCooperate = true;
+        } else if (strat === 'COPYCAT') {
+            aiCooperate = (s3Round === 1) ? true : s3PlayerHistory[s3PlayerHistory.length - 1];
+        } else if (strat === 'GRUDGER') {
+            aiCooperate = !s3PlayerHistory.includes(false);
+        }
+
+        let pGain = 0, aiGain = 0;
+        if (playerCooperate && aiCooperate) { pGain = 1; aiGain = 1; }
+        else if (!playerCooperate && !aiCooperate) { pGain = 0; aiGain = 0; }
+        else if (playerCooperate && !aiCooperate) { pGain = -2; aiGain = 2; }
+        else if (!playerCooperate && aiCooperate) { pGain = 2; aiGain = -2; }
+
+        s3PlayerScore += pGain; s3AiScore += aiGain;
+        s3PlayerHistory.push(playerCooperate);
+        s3AiHistory.push(aiCooperate);
+
+        const term = document.getElementById('s3-terminal');
+        term.innerHTML += `[Round ${s3Round}] Vous : ${playerCooperate?'🤝 C':'🥷 T'} | IA : ${aiCooperate?'🤝 C':'🥷 T'} ➔ Points reçus : ${pGain}/${aiGain}<br>`;
+        term.scrollTop = term.scrollHeight;
+
+        document.getElementById('s3-pscore').innerText = s3PlayerScore;
+        document.getElementById('s3-aiscore').innerText = s3AiScore;
+
+        s3Round++;
+        if (s3Round <= 10) {
+            document.getElementById('s3-round').innerText = s3Round;
+        } else {
+            document.getElementById('s3-round').innerText = "Fin";
+            document.getElementById('s3-controls').style.display = 'none';
+            const fb = document.getElementById('step3-feedback');
+            fb.classList.remove('hidden');
+            fb.innerHTML = "🎓 <strong>L'Ombre du Futur :</strong> Contre le <em>Tricheur</em>, vous avez dû vous défendre. Contre le <em>Copieur</em>, vous avez pu créer une synergie. La répétition transforme la rationalité et pénalise l'opportunisme à long terme.";
+        }
+    }
+
+    // --- ÉTAPE 4 : LE BRUIT ---
+    function triggerNoiseSimulation() {
+        const term = document.getElementById('s4-terminal');
+        term.innerHTML = "🤖 Lancement d'une séquence de coopération parfaite (Copycat vs Copycat)...<br>";
+        
+        let logText = "";
+        let playerHistory = [true, true, true];
+        let aiHistory = [true, true, true];
+
+        for (let t = 1; t <= 10; t++) {
+            let pMove = (t === 1) ? true : aiHistory[t-2];
+            let aiMove = (t === 1) ? true : playerHistory[t-2];
+
+            if (t === 4) {
+                pMove = false;
+                logText += `<span style='color:#EFB901;'>[T4] Vous : COOPÉRER ➔ (💥 BUG DE TRANSMISSION) ➔ IA reçoit : TRAHISON</span><br>`;
+            } else {
+                logText += `[T${t}] Vous : ${pMove?'C':'T'} | IA : ${aiMove?'C':'T'} ➔ `;
+                if (pMove && aiMove) logText += "Harmonie (+1/+1)<br>";
+                if (!pMove && !aiMove) logText += "Guerre froide (0/0)<br>";
+                if (pMove && !aiMove) logText += "Vous êtes dupe (-2/+2)<br>";
+                if (!pMove && aiMove) logText += "IA est dupe (+2/-2)<br>";
+            }
+
+            playerHistory.push(pMove);
+            aiHistory.push(aiMove);
+        }
+
+        term.innerHTML = logText;
+        const fb = document.getElementById('step4-feedback');
+        fb.classList.remove('hidden');
+        fb.innerHTML = "⚠️ <strong>Le Piège du Malentendu :</strong> Après l'accident du Tour 4, les deux IA s'enferment dans une vendetta permanente. Pour briser ce cycle provoqué par le bruit du monde réel, il faut intégrer du <strong>Pardon (Profil Copykitten)</strong>.";
+    }
+
+    // --- ÉTAPE 4.5 : FACTEUR HUMAIN ---
+    function onStep45Change() {
+        const choice = document.getElementById('s45-select').value;
+        const zone = document.getElementById('s45-action-zone');
+        const content = document.getElementById('s45-content');
+        const fb = document.getElementById('s45-feedback');
+        
+        fb.classList.add('hidden');
+        zone.innerHTML = "";
+
+        if (choice === 'cartes') {
+            content.innerHTML = "<strong>Le Pouvoir et la Rareté :</strong> Gricha possède les uniques cartes noires (rares). Vous avez les cartes rouges (surabondantes). Pour toucher la prime, il faut un binôme. Gricha s'interdit formellement de détruire ses cartes.";
+            zone.innerHTML = `<button class="btn btn-primary" onclick="resolve45('cartes')">Évaluer le rapport de force</button>`;
+        } else if (choice === 'partage') {
+            content.innerHTML = "<strong>Le Piège de l'Injustice :</strong> Une IA omnisciente vous propose un partage unilatéral de 10 € : <strong>7 € pour elle, 3 € pour vous</strong>. Si vous refusez, les deux joueurs touchent 0 €.";
+            zone.innerHTML = `
+                <button class="btn btn-primary" onclick="resolve45('accept')">Accepter les 3 €</button>
+                <button class="btn btn-dark" onclick="resolve45('reject')">Refuser par principe</button>
+            `;
+        } else if (choice === 'enchere') {
+            content.innerHTML = "<strong>L'Escalade de l'Ego :</strong> Un billet de 10 € est mis aux enchères à partir de 0,50 €. Règle absolue : Le vainqueur gagne le billet, mais le second doit également payer sa dernière mise à l'animateur sans rien recevoir.";
+            zone.innerHTML = `<button class="btn btn-primary" onclick="resolve45('enchere')">Lancer la simulation d'escalade</button>`;
+        }
+    }
+
+    function resolve45(action) {
+        const fb = document.getElementById('s45-feedback');
+        fb.classList.remove('hidden');
+
+        if (action === 'cartes') {
+            fb.innerHTML = "🃏 <strong>Concept Clé (BATNA) :</strong> La valeur dépend de l'Alternative (MESORE). Gricha détient la rareté, il rafle la mise, sauf si les rouges se syndiquent (Modèle Communautaire).";
+        } else if (action === 'accept') {
+            fb.innerHTML = "💰 <strong>Analyse Rationnelle :</strong> Choix purement logique sur le plan économique (3 € c'est supérieur à 0 €). Mais cette décision ignore la dimension humaine de l'équité.";
+        } else if (action === 'reject') {
+            fb.innerHTML = "❌ <strong>Analyse Comportementale :</strong> C'est la réaction humaine classique. Le sentiment d'équité surpasse l'intérêt financier. L'humain préfère s'auto-punir pour châtier l'égoïsme d'autrui.";
+        } else if (action === 'enchere') {
+            fb.innerHTML = "💸 <strong>L'Engrenage de la Ruine :</strong> À 9 €, le second mise 10 € pour limiter ses pertes. Le premier surenchérit à 11 € pour ne perdre que 1 € au lieu de 10 € ! C'est le piège de l'aversion à la perte.";
+        }
+    }
+
+    // --- ÉTAPE 5 : CHICKEN GAME ---
+    function resetStep5Duel() {
+        const key = document.getElementById('step5-scenario-select').value;
+        const config = CHICKEN_DATA[key];
+        
+        document.getElementById('step5-description').innerText = config.desc;
+        document.getElementById('step5-feedback').classList.add('hidden');
+        
+        // Masquer la matrice au reboot
+        document.getElementById('step5-matrix').classList.add('hidden');
+
+        const buttonsContainer = document.getElementById('step5-buttons-container');
+        buttonsContainer.innerHTML = `
+            <button class="btn btn-primary" onclick="playStep5Game(0)">🏳️ ${config.rows[0]}</button>
+            <button class="btn btn-dark" onclick="playStep5Game(1)">🚘 ${config.rows[1]}</button>
+        `;
+    }
+
+    function playStep5Game(playerChoiceIdx) {
+        const key = document.getElementById('step5-scenario-select').value;
+        const aiType = document.getElementById('step5-ai-select').value;
+        const config = CHICKEN_DATA[key];
+        
+        // Choix de l'IA en face selon le profil sélectionné
+        const aiChoiceIdx = (aiType === 'BULLDOG') ? 1 : 0;
+
+        // Révéler la matrice (Phase de Débrief)
+        const mBox = document.getElementById('step5-matrix');
+        mBox.classList.remove('hidden');
+        mBox.innerHTML = `
+            <div class="matrix-cell header-label">Moi \\ IA</div>
+            <div class="matrix-cell header-label">${config.rows[0]}</div>
+            <div class="matrix-cell header-label">${config.rows[1]}</div>
+            
+            <div class="matrix-cell header-label">${config.rows[0]}</div>
+            <div class="matrix-cell ${playerChoiceIdx===0 && aiChoiceIdx===0 ? 'highlighted-outcome' : ''}">${config.m[0][0]}</div>
+            <div class="matrix-cell ${playerChoiceIdx===0 && aiChoiceIdx===1 ? 'highlighted-outcome' : ''}">${config.m[0][1]}</div>
+            
+            <div class="matrix-cell header-label">${config.rows[1]}</div>
+            <div class="matrix-cell ${playerChoiceIdx===1 && aiChoiceIdx===0 ? 'highlighted-outcome' : ''}">${config.m[1][0]}</div>
+            <div class="matrix-cell ${playerChoiceIdx===1 && aiChoiceIdx===1 ? 'highlighted-outcome' : ''}">${config.m[1][1]}</div>
+        `;
+
+        const fb = document.getElementById('step5-feedback');
+        fb.classList.remove('hidden');
+        
+        let outcomeText = "";
+        if (playerChoiceIdx === 1 && aiChoiceIdx === 1) {
+            outcomeText = "<br><span style='color:var(--red-loose); font-weight:bold;'>💥 CRASH TOTAL !</span> Personne n'a plié. Les ego ont détruit toute la valeur.";
+        } else if (playerChoiceIdx === 0 && aiChoiceIdx === 1) {
+            outcomeText = "<br>Vous avez reculé pour éviter le crash. L'IA tire avantage de sa posture rigide.";
+        } else if (playerChoiceIdx === 1 && aiChoiceIdx === 0) {
+            outcomeText = "<br>Votre fermeté l'emporte, l'IA s'est écrasée pour éviter la collision.";
+        } else {
+            outcomeText = "<br>Compromis prudent mutuel.";
+        }
+
+        const textNote = (aiType === 'BULLDOG') ? config.note_bulldog : config.note_poltron;
+        fb.innerHTML = `💥 <strong>Débriefing du Bras de fer :</strong> Vous : [${config.rows[playerChoiceIdx]}] | IA : [${config.rows[aiChoiceIdx]}].${outcomeText}<br><br>${textNote}`;
+    }
+
+    // Attachements initiaux indispensables
+    gameSelector.addEventListener('change', onStep2GameChange);
+</script>
+
 </body>
 </html>
